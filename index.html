@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="朋友圈人物分析 - 基于 AI 帮助你了解 TA 并发展恋爱关系">
+  <title>朋友圈人物分析</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <!-- 合规提示 -->
+    <aside class="notice">
+      <p>本工具仅供个人了解参考，不构成专业建议。请勿在未经他人同意的情况下过度收集其隐私信息。</p>
+      <p class="notice-sub">截图仅用于分析，不存储、不分享。</p>
+    </aside>
+
+    <!-- 主标题 -->
+    <header class="header">
+      <h1>朋友圈人物分析</h1>
+      <p class="tagline">上传 TA 的朋友圈截图，AI 帮你读懂 TA</p>
+    </header>
+
+    <!-- 上传区 -->
+    <section class="upload-section">
+      <div class="upload-hint">
+        <span>至少上传 5 张截图</span>
+        <span>支持 JPG / PNG / WebP，单张 ≤ 5MB</span>
+      </div>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
+        <div class="upload-placeholder" id="uploadPlaceholder">
+          <div class="upload-icon">📷</div>
+          <p>点击或拖拽上传朋友圈截图</p>
+        </div>
+        <div class="preview-grid" id="previewGrid"></div>
+      </div>
+
+      <button class="btn-analyze" id="btnAnalyze" disabled>
+        开始分析
+      </button>
+    </section>
+
+    <!-- 加载态 -->
+    <section class="loading-section hidden" id="loadingSection">
+      <div class="loading-spinner"></div>
+      <p>AI 正在深度分析中…</p>
+      <p class="loading-hint">预计 30 秒 ~ 2 分钟，请耐心等待</p>
+    </section>
+
+    <!-- 结果区 -->
+    <section class="result-section hidden" id="resultSection">
+      <div class="result-header">
+        <h2>分析结果</h2>
+        <p class="result-subtitle">基于 AI 深度分析的人物洞察</p>
+      </div>
+      <div class="result-content" id="resultContent"></div>
+      <div class="share-section">
+        <button class="share-btn" id="btnCopy">
+          📋 复制结果
+        </button>
+        <button class="share-btn primary" id="btnShare">
+          📤 分享结果
+        </button>
+        <button class="share-btn" id="btnExport">
+          📄 导出文档
+        </button>
+      </div>
+      <p class="disclaimer">以上分析仅供参考，不构成专业建议。</p>
+    </section>
+
+    <!-- 分析结果弹窗 -->
+    <div class="modal hidden" id="resultModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>详细分析结果</h2>
+          <button class="modal-close" id="btnModalClose">×</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <!-- 分析内容将动态填充 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 错误提示 -->
+    <div class="toast hidden" id="toast"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
