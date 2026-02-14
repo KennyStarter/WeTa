@@ -1,14 +1,21 @@
 {
   "name": "moments-analyzer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "朋友圈人物分析 H5 - 基于豆包大模型分析对方朋友圈，帮助发展恋爱关系",
   "main": "server.js",
   "scripts": {
     "start": "node -r dotenv/config server.js",
-    "dev": "node -r dotenv/config server.js"
+    "dev": "node -r dotenv/config server.js",
+    "init-db": "node -r dotenv/config init-db.js"
   },
   "dependencies": {
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "uuid": "^9.0.1",
+    "cors": "^2.8.5"
   },
   "engines": {
     "node": ">=16.0.0"

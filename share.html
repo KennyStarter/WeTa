@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="朋友圈人物分析 - 分享页面">
+  <title>朋友圈人物分析 - 分享</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .share-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+    }
+
+    .share-header {
+      text-align: center;
+      padding: 32px 24px;
+      background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%);
+      border-radius: 24px;
+      color: white;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .share-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .share-header p {
+      font-size: 14px;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .share-info {
+      background: white;
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .share-info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .share-info-item span {
+      color: #FF6B6B;
+      font-weight: 600;
+    }
+
+    .share-result {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      margin-bottom: 24px;
+    }
+
+    .share-loading {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .share-loading .loading-spinner {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 20px;
+      border: 4px solid #E8E8E8;
+      border-top-color: #FF6B6B;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .share-error {
+      text-align: center;
+      padding: 60px 24px;
+      color: #FF6B6B;
+    }
+
+    .share-error .error-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .share-footer {
+      background: linear-gradient(135deg, #FFF5F5 0%, #FFF9F6 100%);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .share-footer h3 {
+      font-size: 18px;
+      color: #333;
+      margin: 0 0 12px;
+    }
+
+    .share-footer p {
+      color: #666;
+      margin: 0 0 20px;
+      font-size: 14px;
+    }
+
+    .share-footer .btn-primary {
+      background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .share-footer .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
+    }
+
+    .share-result-content {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #333;
+    }
+
+    .share-result-content h3 {
+      color: #FF6B6B;
+      font-size: 18px;
+      margin: 24px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #FFE5E5;
+    }
+
+    .share-result-content h4 {
+      color: #4ECDC4;
+      font-size: 16px;
+      margin: 16px 0 8px;
+    }
+
+    .share-result-content p {
+      margin: 8px 0;
+      color: #666;
+    }
+
+    .share-result-content ul {
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+
+    .share-result-content li {
+      margin: 6px 0;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .share-page {
+        padding: 16px;
+      }
+
+      .share-header {
+        margin: 0 -16px 24px;
+        border-radius: 0 0 24px 24px;
+      }
+
+      .share-header h1 {
+        font-size: 22px;
+      }
+
+      .share-info {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="share-page">
+    <header class="share-header">
+      <h1>朋友圈人物分析</h1>
+      <p>基于 AI 深度分析的人物洞察</p>
+    </header>
+
+    <div class="share-info" id="shareInfo" style="display: none;">
+      <div class="share-info-item">
+        <span>📅</span>
+        <span id="shareDate"></span>
+      </div>
+      <div class="share-info-item">
+        <span>👁️</span>
+        已查看 <span id="viewCount">0</span> 次
+      </div>
+    </div>
+
+    <div class="share-result" id="shareResult">
+      <div class="share-loading" id="shareLoading">
+        <div class="loading-spinner"></div>
+        <p>正在加载分享内容…</p>
+      </div>
+      <div class="share-error hidden" id="shareError">
+        <div class="error-icon">😔</div>
+        <h3>分享内容不存在或已过期</h3>
+        <p>此分享链接可能已被删除或超过有效期</p>
+      </div>
+      <div class="share-result-content hidden" id="shareContent"></div>
+    </div>
+
+    <footer class="share-footer">
+      <h3>也想分析一下 TA 的朋友圈？</h3>
+      <p>上传朋友圈截图，AI 帮你读懂 TA</p>
+      <a href="index.html" class="btn-primary">立即体验</a>
+    </footer>
+  </div>
+
+  <script>
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    function parseMarkdown(text) {
+      let html = text
+        .replace(/^### (.*$)/gim, '<h4>$1</h4>')
+        .replace(/^## (.*$)/gim, '<h3>$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^- (.*$)/gim, '<li>$1</li>');
+      
+      html = html.replace(/(<li>.*<\/li>\n?)+/g, function(match) {
+        return '<ul>' + match + '</ul>';
+      });
+      
+      return html.replace(/\n/g, '<br>');
+    }
+
+    async function loadShare() {
+      const shareId = getQueryParam('id');
+      
+      if (!shareId) {
+        showError();
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/share/${shareId}`);
+        const result = await response.json();
+
+        if (!result.success) {
+          showError();
+          return;
+        }
+
+        const { data } = result;
+        
+        document.getElementById('shareInfo').style.display = 'flex';
+        document.getElementById('shareDate').textContent = formatDate(data.createdAt);
+        document.getElementById('viewCount').textContent = data.viewCount;
+
+        document.getElementById('shareLoading').classList.add('hidden');
+        const contentEl = document.getElementById('shareContent');
+        contentEl.innerHTML = parseMarkdown(data.content);
+        contentEl.classList.remove('hidden');
+
+      } catch (err) {
+        console.error('加载分享失败:', err);
+        showError();
+      }
+    }
+
+    function showError() {
+      document.getElementById('shareLoading').classList.add('hidden');
+      document.getElementById('shareError').classList.remove('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', loadShare);
+  </script>
+</body>
+</html>

@@ -8,6 +8,34 @@
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
 
+  // 认证状态管理
+  const AUTH_KEY = 'moments_auth';
+
+  function getAuthState() {
+    try {
+      const data = localStorage.getItem(AUTH_KEY);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function setAuthState(token, user) {
+    localStorage.setItem(AUTH_KEY, JSON.stringify({ token, user }));
+  }
+
+  function clearAuthState() {
+    localStorage.removeItem(AUTH_KEY);
+  }
+
+  function getAuthHeaders() {
+    const auth = getAuthState();
+    if (auth && auth.token) {
+      return { Authorization: `Bearer ${auth.token}` };
+    }
+    return {};
+  }
+
   const uploadZone = $('#uploadZone');
   const fileInput = $('#fileInput');
   const uploadPlaceholder = $('#uploadPlaceholder');
@@ -266,39 +294,60 @@
   }
 
   // 分享结果
-  function shareResult() {
+  async function shareResult() {
     if (!currentResult) {
       showToast('暂无分析结果');
       return;
     }
-    
-    // 生成分享链接（实际项目中可能需要后端支持）
-    const shareUrl = generateShareLink();
-    
-    if (navigator.share) {
-      navigator.share({
-        title: '朋友圈人物分析结果',
-        text: '我用 AI 分析了朋友圈，获得了详细的人物洞察！',
-        url: shareUrl
-      }).catch(() => {
-        showToast('分享取消');
+
+    try {
+      const authState = getAuthState();
+      const headers = { 'Content-Type': 'application/json' };
+      
+      if (authState && authState.token) {
+        headers['Authorization'] = `Bearer ${authState.token}`;
+      }
+
+      const res = await fetch('/api/share/save', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          content: currentResult,
+          isPublic: true,
+        }),
       });
-    } else {
-      // 复制分享链接
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        showToast('分享链接已复制，请粘贴到浏览器打开');
-      }).catch(() => {
-        showToast('复制失败，请手动复制链接');
-      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || '保存分享失败');
+      }
+
+      const shareUrl = data.shareUrl;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: '朋友圈人物分析结果',
+          text: '我用 AI 分析了朋友圈，获得了详细的人物洞察！',
+          url: shareUrl
+        }).catch(() => {
+          copyShareUrl(shareUrl);
+        });
+      } else {
+        copyShareUrl(shareUrl);
+      }
+    } catch (err) {
+      console.error('分享失败:', err);
+      showToast(err.message || '分享失败，请稍后重试');
     }
   }
 
-  // 生成分享链接
-  function generateShareLink() {
-    // 实际项目中可能需要后端生成唯一链接
-    // 这里使用简单的 Base64 编码模拟
-    const data = btoa(encodeURIComponent(currentResult.substring(0, 500)));
-    return `${window.location.origin}?share=${data}`;
+  function copyShareUrl(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('分享链接已复制！');
+    }).catch(() => {
+      showToast('复制失败，请手动复制链接');
+    });
   }
 
   // 导出文档功能
@@ -358,12 +407,19 @@
     btnAnalyze.disabled = true;
 
     try {
+      const authState = getAuthState();
+      const requestBody = {
+        images: images.map((img) => img.dataUrl),
+      };
+      
+      if (authState && authState.user) {
+        requestBody.userId = authState.user.id;
+      }
+
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          images: images.map((img) => img.dataUrl),
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await res.json().catch(() => ({}));
